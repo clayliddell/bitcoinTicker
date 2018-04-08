@@ -1,5 +1,5 @@
-# bitcoinTicker
-An iOS Bitcoin ticker app
+# cryptoTicker
+An iOS Cryptocurrency ticker app
 
 # Why?
 I know what your thinking, another cryptocurrency ticker? The iOS AppStore is already **flooded** with cryptocurrency wallets, tickers, and exchanges! Do we really need another one?
