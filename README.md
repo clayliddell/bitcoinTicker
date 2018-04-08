@@ -10,6 +10,6 @@ Being a cryptocurrency enthusiast, I've tried many different apps across the App
 
 # TODO
 * Add Price history graphs to each coin.
-* Add support for Swift 4.1.
+* <s>Add support for Swift 4.1.</s>
 * Create price widget with change in prices.
 * Create AppIcon.
