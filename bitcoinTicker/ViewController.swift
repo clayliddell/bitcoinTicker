@@ -9,16 +9,21 @@
 import UIKit
 import Disk
 
-class ViewController: UITableViewController, UISearchControllerDelegate {
+class ViewController: UITableViewController, UISearchControllerDelegate, UIPopoverPresentationControllerDelegate {
 
+    @IBOutlet weak var RightBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var settingsButton: UIButton!
+    
+    
     let searchController = UISearchController(searchResultsController: nil)
     let favoritesButton = UIBarButtonItem(title: "Favorites", style: .plain, target: nil, action: nil)
-    let settingsButton = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
     
     let defaults = UserDefaults.standard
     var coins : [Coin]?
     
     var filteredData : [Coin]? = [Coin]()
+    
+    var myIndex : Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +37,7 @@ class ViewController: UITableViewController, UISearchControllerDelegate {
         searchController.hidesNavigationBarDuringPresentation = false
         navigationItem.titleView = searchController.searchBar
         navigationItem.leftBarButtonItem = favoritesButton
-        navigationItem.rightBarButtonItem = settingsButton
+        navigationItem.rightBarButtonItem = RightBarButtonItem
         
         if !isAppAlreadyLaunchedOnce() {
             defaults.set("USD", forKey: "nativeCurrency")
@@ -90,6 +95,8 @@ class ViewController: UITableViewController, UISearchControllerDelegate {
             
             if let nativeCurrency = defaults.string(forKey: "nativeCurrency"), let price = coin.price?.Conversions[nativeCurrency] {
                 cell.detailTextLabel?.text = nativeCurrency + ": " + String(format:"%.2f", price)
+            } else {
+                cell.detailTextLabel?.text = "USD: 999.99"
             }
             
             if let coinImage = coin.image {
@@ -98,6 +105,33 @@ class ViewController: UITableViewController, UISearchControllerDelegate {
         }
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        myIndex = indexPath.row
+        performSegue(withIdentifier: "currencyDetailsSegue", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "settingsButtonPressed" {
+            let popoverViewController = segue.destination
+            popoverViewController.popoverPresentationController?.sourceView = RightBarButtonItem.value(forKey: "view") as? UIView
+            popoverViewController.popoverPresentationController?.sourceRect = settingsButton.frame
+            popoverViewController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+            popoverViewController.modalPresentationStyle = .popover
+            /*if ItemDetails.LoggedIn
+            {
+                popoverViewController.preferredContentSize = CGSize(width: 75, height: 50)
+            } else
+            {*/
+                popoverViewController.preferredContentSize = CGSize(width: 200, height: 125)
+            //}
+            popoverViewController.popoverPresentationController!.delegate = self
+        }
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
     }
     
     // MARK: - Private instance methods
@@ -134,7 +168,7 @@ extension ViewController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         navigationItem.leftBarButtonItem = favoritesButton
-        navigationItem.rightBarButtonItem = settingsButton
+        navigationItem.rightBarButtonItem = RightBarButtonItem
         searchController.searchBar.setShowsCancelButton(false, animated: false)
     }
     
